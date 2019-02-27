@@ -104,6 +104,14 @@ ALLOWED_CONTENT_TYPES = {'tsv': 'text/tab-separated-values',
                          'FITSTable': 'application/fits'}
 ALLOWED_TB_DEF_TYPES = {'VOSITable': 'text/xml',
                         'VOTable': 'application/x-votable+xml'}
+AUTH_OPTION_EXPLANATION = 'If no authentication option is specified, '\
+                    'cadc-tap will look in the ~/.netrc file for the '\
+                    'cadc.ugly or canfar.net domain, and if found, will '\
+                    'use the -n option. If not, cadc-tap will look for '\
+                    '~/.ssl/cadcproxy.pem file, and if found, will use the '\
+                    '--cert option. If not, cadc-tap will use the --anon '\
+                    'option.'
+
 
 # make the stream bar show up on stdout
 progress.STREAM = sys.stdout
@@ -366,6 +374,13 @@ def _add_anon_option(parser):
                         '-a', '--anon', action='store_true',
                         help='use the service anonymously')
 
+                    '''
+                    Note: argparse does not display the mutually exclusive
+                    options correctly when an option is added to the mutually
+                    exclusive group after other arguments are added. The
+                    following code is a work around to display the mutually
+                    exclusive options correctly in help.
+                    '''
                     # get the option strings for the auth options
                     g_action_o_strings = []
                     for group_action in m_group._group_actions:
@@ -484,11 +499,12 @@ def main_app(command='cadc-tap query'):
              'for more details')
     schema_parser = subparsers.add_parser(
         'schema',
-        description=('Print the tables available for querying.'),
+        description=('Print the tables available for querying.\n') +
+                    AUTH_OPTION_EXPLANATION,
         help='Print the tables available for querying.')
     query_parser = subparsers.add_parser(
         'query',
-        description=('Run an adql query'),
+        description=('Run an adql query\n') + AUTH_OPTION_EXPLANATION,
         help='Run an adql query')
     query_parser.add_argument(
         '-o', '--output-file',
@@ -548,7 +564,7 @@ def main_app(command='cadc-tap query'):
 
     create_parser = subparsers.add_parser(
         'create',
-        description='Create a table',
+        description='Create a table\n' + AUTH_OPTION_EXPLANATION,
         help='Create a table')
     create_parser.add_argument(
         '-f', '--format', choices=sorted(ALLOWED_TB_DEF_TYPES.keys()),
@@ -564,7 +580,7 @@ def main_app(command='cadc-tap query'):
 
     delete_parser = subparsers.add_parser(
         'delete',
-        description='Delete a table',
+        description='Delete a table\n' + AUTH_OPTION_EXPLANATION,
         help='delete a table')
     delete_parser.add_argument(
         'TABLENAME',
@@ -573,7 +589,7 @@ def main_app(command='cadc-tap query'):
 
     index_parser = subparsers.add_parser(
         'index',
-        description='Create a table index',
+        description='Create a table index\n' + AUTH_OPTION_EXPLANATION,
         help='Create a table index')
     index_parser.add_argument(
         '-U', '--unique', action='store_true',
@@ -587,7 +603,7 @@ def main_app(command='cadc-tap query'):
 
     load_parser = subparsers.add_parser(
         'load',
-        description='Load data to a table',
+        description='Load data to a table\n' + AUTH_OPTION_EXPLANATION,
         help='Load data to a table')
     load_parser.add_argument(
         '-f', '--format', choices=sorted(ALLOWED_CONTENT_TYPES.keys()),
