@@ -346,6 +346,7 @@ class CadcTapClient(object):
         with self._tap_client.post((QUERY_CAPABILITY_ID, None, 'uws:Sync'),
                                    data=m, headers={
                                        'Content-Type': m.content_type},
+                                   params=fields,
                                    stream=True) as result:
             if not output_file:
                 print(result.text)
